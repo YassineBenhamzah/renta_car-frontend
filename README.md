@@ -168,7 +168,7 @@ VITE_API_URL=https://your-hostinger-backend.com/api
 **Yassine Benhamzah**
 
 - GitHub: [@YassineBenhamzah](https://github.com/YassineBenhamzah)
-- LinkedIn: [linkedin.com/in/your-profile](https://linkedin.com/in/your-profile)
+- LinkedIn: https://www.linkedin.com/in/yassine-benhamzah/
 
 ---
 
