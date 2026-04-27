@@ -2,32 +2,19 @@ import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosClient from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "../context/ThemeContext";
 
-/* ── SVG icon helpers ── */
 const MailIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    <path strokeLinecap="square" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
   </svg>
 );
 const LockIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    <path strokeLinecap="square" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
   </svg>
 );
-const CarIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M1 9h3m16 7h1a1 1 0 001-1v-3.65a1 1 0 00-.22-.624l-3.48-4.35A1 1 0 0017.52 7H13" />
-  </svg>
-);
-
-const inputCls =
-  "w-full border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-700 bg-gray-50 placeholder-gray-400 " +
-  "focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all duration-200";
 
 export default function Login() {
   const emailRef = useRef();
@@ -35,16 +22,18 @@ export default function Login() {
   const { login } = useAuth();
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+
+  const changeLanguage = (lng) => { i18n.changeLanguage(lng); };
+
+  const inputCls = "w-full border-b border-gray-300 dark:border-gray-700 bg-transparent pl-9 pr-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary dark:focus:border-primary transition-all duration-300 rounded-none focus:ring-0";
 
   const onSubmit = (ev) => {
     ev.preventDefault();
     setLoading(true);
     setErrors(null);
-    axiosClient
-      .post("/login", {
-        email: emailRef.current.value,
-        password: passwordRef.current.value,
-      })
+    axiosClient.post("/login", { email: emailRef.current.value, password: passwordRef.current.value })
       .then(({ data }) => login(data.token, data.user))
       .catch((err) => {
         const res = err.response;
@@ -55,108 +44,88 @@ export default function Login() {
   };
 
   return (
-    <div className="flex w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl bg-white">
-
-      {/* ── LEFT: Dark panel ── */}
-      <div className="hidden md:flex flex-col items-center justify-center w-2/5 bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 relative overflow-hidden px-10 text-center py-16">
-        {/* Decorative blobs */}
-        <div className="absolute -top-16 -right-16 w-52 h-52 bg-blue-600 rounded-full opacity-20 blur-2xl" />
-        <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-blue-500 rounded-full opacity-10 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-700 rounded-full opacity-10 blur-3xl" />
-
-        {/* Decorative geometric shapes */}
-        <div className="absolute top-8 right-8 w-16 h-16 border-2 border-white/10 rounded-full" />
-        <div className="absolute bottom-10 left-8 w-10 h-10 border-2 border-blue-400/20 rotate-45" />
-        <div className="absolute bottom-20 right-6 w-6 h-6 bg-blue-500/30 rounded-full" />
-        <div className="absolute top-24 left-6 w-4 h-4 bg-white/10 rotate-12 rounded-sm" />
-
-        {/* Car silhouette icon */}
-        <div className="w-16 h-16 bg-blue-600/30 border border-blue-500/30 rounded-2xl flex items-center justify-center mb-6 relative z-10 backdrop-blur-sm">
-          <CarIcon />
-        </div>
-
-        <h2 className="text-3xl font-extrabold text-white mb-3 relative z-10 leading-tight">
-          Welcome<br />Back!
-        </h2>
-        <p className="text-blue-200/80 text-sm mb-8 leading-relaxed relative z-10">
-          Enter your credentials and<br />start your journey with us
-        </p>
-        <Link
-          to="/signup"
-          className="relative z-10 border-2 border-blue-400/60 text-blue-100 font-semibold py-2.5 px-9 rounded-full text-xs uppercase tracking-widest hover:bg-blue-600 hover:border-blue-600 hover:text-white active:scale-95 transition-all duration-200"
-        >
-          Sign Up
-        </Link>
-
-        {/* bottom tag */}
-        <span className="absolute bottom-4 text-[10px] text-blue-300/40 tracking-widest uppercase z-10">
-          RentaCar · Premium Fleet
-        </span>
+    <div className="flex w-full min-h-screen bg-gray-50 dark:bg-[#050505] items-center justify-center p-0 md:p-6 transition-colors duration-300 relative">
+      
+      {/* Absolute Back Button */}
+      <div className="absolute top-6 left-6 z-50">
+          <Link to="/" className="flex items-center gap-2 text-gray-900 dark:text-white font-bold text-xs uppercase tracking-widest hover:text-primary dark:hover:text-primary transition-colors cursor-pointer drop-shadow-md bg-white/50 dark:bg-black/50 backdrop-blur-md px-4 py-2 hover:bg-white dark:hover:bg-black">
+              <span>←</span> Return to Home
+          </Link>
       </div>
 
-      {/* ── RIGHT: Form panel ── */}
-      <div className="flex flex-col justify-center w-full md:w-3/5 px-10 py-12 bg-white">
-
-        {/* Logo */}
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-md shadow-blue-600/30">
-            <CarIcon />
+      {/* Absolute Toggles */}
+      <div className="absolute top-6 right-6 z-50 flex items-center gap-6">
+          <button onClick={toggleTheme} className="text-gray-900 dark:text-white font-bold text-xl drop-shadow-md cursor-pointer hover:opacity-75 transition-opacity">
+              {theme === "dark" ? '☀️' : '🌙'}
+          </button>
+          <div className="flex gap-4 drop-shadow-md">
+              <button onClick={() => changeLanguage('en')} className={`font-bold text-sm cursor-pointer hover:opacity-75 transition-opacity ${i18n.language === 'en' ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>EN</button>
+              <button onClick={() => changeLanguage('fr')} className={`font-bold text-sm cursor-pointer hover:opacity-75 transition-opacity ${i18n.language === 'fr' ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>FR</button>
           </div>
-          <span className="font-extrabold text-gray-800 text-base tracking-tight">RentaCar</span>
+      </div>
+
+      <div className="flex w-full max-w-5xl md:rounded shadow-2xl bg-white dark:bg-[#0f0f0f] border border-gray-200 dark:border-gray-800 relative z-10 overflow-hidden min-h-screen md:min-h-0 transition-colors duration-300">
+        
+        {/* ── LEFT: Form panel ── */}
+        <div className="flex flex-col justify-center w-full md:w-1/2 px-8 py-16 md:px-16">
+          
+          <Link to="/" className="flex items-center gap-3 mb-16 w-fit hover:opacity-80 transition-opacity">
+            <div className="w-12 h-12 border-2 border-primary flex justify-center items-center font-bold text-xl text-primary">Y/B</div>
+            <div className="flex flex-col">
+              <span className="text-xl text-gray-900 dark:text-white font-black tracking-widest leading-none">YASSINE<span className="text-primary">BENHAMZAH</span></span>
+              <span className="text-[10px] text-gray-500 tracking-widest uppercase mt-1">{t('auth.premium')}</span>
+            </div>
+          </Link>
+
+          <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-widest">{t('auth.signInTitle')}</h1>
+          <p className="text-xs text-primary font-bold mb-10 tracking-[0.2em] uppercase">{t('auth.signInWelcome')}</p>
+
+          {errors && (
+            <div className="bg-red-50 dark:bg-red-900/20 border-l-2 border-red-500 text-red-600 dark:text-red-500 text-[10px] tracking-widest uppercase px-4 py-3 mb-6">
+              {errors.email?.[0] ?? "Something went wrong."}
+            </div>
+          )}
+
+          <form onSubmit={onSubmit} className="space-y-8">
+            <div className="relative group">
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 group-focus-within:text-primary transition-colors"><MailIcon /></span>
+              <input ref={emailRef} type="email" placeholder={t('auth.email')} required className={inputCls} />
+            </div>
+
+            <div className="relative group">
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 group-focus-within:text-primary transition-colors"><LockIcon /></span>
+              <input ref={passwordRef} type="password" placeholder={t('auth.password')} required className={inputCls} />
+            </div>
+
+            <div className="text-right">
+              <span className="text-[10px] text-gray-500 dark:text-gray-600 hover:text-primary dark:hover:text-primary cursor-pointer font-bold tracking-widest uppercase transition-colors">
+                {t('auth.forgot')}
+              </span>
+            </div>
+
+            <button type="submit" disabled={loading} className="w-full bg-transparent border border-gray-300 dark:border-gray-600 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-black dark:hover:text-black active:scale-[0.98] text-gray-900 dark:text-white font-bold py-4 tracking-[0.2em] uppercase text-xs transition-all duration-300 disabled:opacity-50 mt-4 cursor-pointer">
+              {loading ? t('auth.authorizing') : t('auth.authorize')}
+            </button>
+          </form>
+
+          <div className="mt-12 flex flex-col gap-4 text-center border-t border-gray-200 dark:border-gray-800 pt-8">
+            <p className="text-[10px] text-gray-400 dark:text-gray-600 tracking-widest uppercase mb-1">{t('auth.newAccountText')}</p>
+            <Link to="/signup" className="text-xs text-gray-900 dark:text-white font-black tracking-widest uppercase hover:text-primary transition-colors">{t('auth.createAccount')}</Link>
+          </div>
         </div>
 
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-1">Sign in</h1>
-        <p className="text-sm text-gray-400 mb-8">Welcome back! Please enter your details.</p>
-
-        {/* Error */}
-        {errors && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">
-            {errors.email?.[0] ?? "Something went wrong."}
-          </div>
-        )}
-
-        <form onSubmit={onSubmit} className="space-y-4">
-          {/* Email */}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><MailIcon /></span>
-            <input ref={emailRef} type="email" placeholder="Email address" required className={inputCls} />
-          </div>
-
-          {/* Password */}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><LockIcon /></span>
-            <input ref={passwordRef} type="password" placeholder="Password" required className={inputCls} />
-          </div>
-
-          {/* Forgot */}
-          <div className="text-right">
-            <span className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer font-medium transition-colors">
-              Forgot your password?
-            </span>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3 rounded-xl tracking-wide text-sm shadow-lg shadow-blue-600/30 transition-all duration-200 disabled:opacity-60 mt-2"
-          >
-            {loading ? "Signing in…" : "Sign In"}
-          </button>
-        </form>
-
-        {/* Mobile CTA */}
-        <p className="text-center text-xs text-gray-400 md:hidden mt-6">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-600 font-semibold">Sign Up</Link>
-        </p>
-
-        {/* Divider with features */}
-        <div className="mt-10 pt-6 border-t border-gray-100">
-          <div className="flex justify-between text-xs text-gray-400">
-            {["🚗 200+ Cars", "🛡️ Insured", "⚡ Fast Booking"].map((f) => (
-              <span key={f} className="font-medium">{f}</span>
-            ))}
+        {/* ── RIGHT: Cinematic Background ── */}
+        <div className="hidden md:flex flex-col items-center justify-end w-1/2 relative bg-black p-12 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=1500" alt="Luxury Car Welcome" className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-black/40 to-transparent dark:from-[#050505]/90 dark:via-[#050505]/40 light:from-white/90"></div>
+          
+          <div className="relative z-10 text-center w-full mb-10">
+             <h2 className="text-4xl font-black text-white mb-2 uppercase tracking-widest w-full drop-shadow-lg">
+               {t('auth.unleash')} <br/><span className="text-primary">{t('auth.power')}</span>
+             </h2>
+             <p className="text-[10px] text-gray-300 font-bold tracking-widest uppercase mt-4 drop-shadow-md">
+               {t('auth.signInDesc')}
+             </p>
           </div>
         </div>
       </div>

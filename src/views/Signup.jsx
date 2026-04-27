@@ -1,20 +1,8 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-/* ── SVG icon helpers ── */
-const CarIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M1 9h3m16 7h1a1 1 0 001-1v-3.65a1 1 0 00-.22-.624l-3.48-4.35A1 1 0 0017.52 7H13" />
-  </svg>
-);
-
-const inputCls =
-  "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-gray-50 placeholder-gray-400 " +
-  "focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all duration-200";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Signup() {
   const nameRef = useRef();
@@ -29,6 +17,13 @@ export default function Signup() {
   const { register } = useAuth();
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+
+  const changeLanguage = (lng) => { i18n.changeLanguage(lng); };
+
+  const inputCls = "w-full border-b border-gray-300 dark:border-gray-700 bg-transparent px-2 py-3 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary dark:focus:border-primary transition-all duration-300 tracking-wider rounded-none focus:ring-0";
 
   const onSubmit = (ev) => {
     ev.preventDefault();
@@ -53,122 +48,106 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl bg-white">
-
-      {/* ── LEFT: Form panel ── */}
-      <div className="flex flex-col justify-center w-full md:w-3/5 px-10 py-10 bg-white overflow-y-auto">
-
-        {/* Logo */}
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-md shadow-blue-600/30">
-            <CarIcon />
-          </div>
-          <span className="font-extrabold text-gray-800 text-base tracking-tight">RentaCar</span>
-        </div>
-
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-1">Create account</h1>
-        <p className="text-sm text-gray-400 mb-6">Join us today and start renting in minutes.</p>
-
-        {/* Error */}
-        {errors && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-4">
-            {typeof errors === "object"
-              ? Object.values(errors).flat().join(" · ")
-              : "Something went wrong."}
-          </div>
-        )}
-
-        <form onSubmit={onSubmit} className="space-y-3">
-          {/* Row 1 */}
-          <div className="grid grid-cols-2 gap-3">
-            <input ref={nameRef} type="text" placeholder="Full name" required className={inputCls} />
-            <input ref={emailRef} type="email" placeholder="Email address" required className={inputCls} />
-          </div>
-
-          {/* Row 2 */}
-          <div className="grid grid-cols-2 gap-3">
-            <input ref={passwordRef} type="password" placeholder="Password" required className={inputCls} />
-            <input ref={passwordConfirmationRef} type="password" placeholder="Confirm password" required className={inputCls} />
-          </div>
-
-          {/* Divider label */}
-          <div className="flex items-center gap-2 pt-1">
-            <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Identity & Contact</span>
-            <div className="flex-1 h-px bg-gray-100" />
-          </div>
-
-          {/* Row 3 */}
-          <div className="grid grid-cols-2 gap-3">
-            <input ref={cinRef} type="text" placeholder="CIN number" className={inputCls} />
-            <input ref={permisRef} type="text" placeholder="Driver's license" className={inputCls} />
-          </div>
-
-          {/* Row 4 */}
-          <div className="grid grid-cols-2 gap-3">
-            <input ref={phoneRef} type="tel" placeholder="Phone number" className={inputCls} />
-            <input ref={addressRef} type="text" placeholder="City / Address" className={inputCls} />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3 rounded-xl tracking-wide text-sm shadow-lg shadow-blue-600/30 transition-all duration-200 disabled:opacity-60 mt-2"
-          >
-            {loading ? "Creating account…" : "Create Account"}
-          </button>
-        </form>
-
-        {/* Mobile CTA */}
-        <p className="text-center text-xs text-gray-400 md:hidden mt-5">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 font-semibold">Sign In</Link>
-        </p>
-
-        {/* Feature strip */}
-        <div className="mt-8 pt-5 border-t border-gray-100">
-          <div className="flex justify-between text-xs text-gray-400">
-            {["🚗 200+ Cars", "🛡️ Full Insurance", "⚡ Instant Booking"].map((f) => (
-              <span key={f} className="font-medium">{f}</span>
-            ))}
-          </div>
-        </div>
+    <div className="flex w-full min-h-screen bg-gray-50 dark:bg-[#050505] items-center justify-center p-0 md:p-6 transition-colors duration-300 relative">
+      
+      {/* Absolute Back Button */}
+      <div className="absolute top-6 left-6 z-50">
+          <Link to="/" className="flex items-center gap-2 text-gray-900 dark:text-white font-bold text-xs uppercase tracking-widest hover:text-primary dark:hover:text-primary transition-colors cursor-pointer drop-shadow-md bg-white/50 dark:bg-black/50 backdrop-blur-md px-4 py-2 hover:bg-white dark:hover:bg-black">
+              <span>←</span> Return to Home
+          </Link>
       </div>
 
-      {/* ── RIGHT: Dark panel ── */}
-      <div className="hidden md:flex flex-col items-center justify-center w-2/5 bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 relative overflow-hidden px-10 text-center py-16">
-        {/* Blobs */}
-        <div className="absolute -top-16 -left-16 w-52 h-52 bg-blue-600 rounded-full opacity-20 blur-2xl" />
-        <div className="absolute -bottom-20 -right-10 w-64 h-64 bg-blue-500 rounded-full opacity-10 blur-3xl" />
+      {/* Absolute Toggles */}
+      <div className="absolute top-6 right-6 z-50 flex items-center gap-6">
+          <button onClick={toggleTheme} className="text-gray-900 dark:text-white font-bold text-xl drop-shadow-md cursor-pointer hover:opacity-75 transition-opacity">
+              {theme === "dark" ? '☀️' : '🌙'}
+          </button>
+          <div className="flex gap-4 drop-shadow-md">
+              <button onClick={() => changeLanguage('en')} className={`font-bold text-sm cursor-pointer hover:opacity-75 transition-opacity ${i18n.language === 'en' ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>EN</button>
+              <button onClick={() => changeLanguage('fr')} className={`font-bold text-sm cursor-pointer hover:opacity-75 transition-opacity ${i18n.language === 'fr' ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>FR</button>
+          </div>
+      </div>
 
-        {/* Decorative shapes */}
-        <div className="absolute top-8 left-8 w-16 h-16 border-2 border-white/10 rounded-full" />
-        <div className="absolute bottom-10 right-8 w-10 h-10 border-2 border-blue-400/20 rotate-45" />
-        <div className="absolute bottom-20 left-6 w-6 h-6 bg-blue-500/30 rounded-full" />
-        <div className="absolute top-24 right-6 w-4 h-4 bg-white/10 rotate-12 rounded-sm" />
-
-        {/* Car icon */}
-        <div className="w-16 h-16 bg-blue-600/30 border border-blue-500/30 rounded-2xl flex items-center justify-center mb-6 relative z-10 backdrop-blur-sm">
-          <CarIcon />
+      <div className="flex w-full max-w-6xl md:rounded shadow-2xl bg-white dark:bg-[#0f0f0f] border border-gray-200 dark:border-gray-800 relative z-10 overflow-hidden min-h-screen md:min-h-[85vh] transition-colors duration-300">
+        
+        {/* ── LEFT: Cinematic Background ── */}
+        <div className="hidden md:flex flex-col items-center justify-end w-2/5 relative bg-black p-12 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=2000" alt="Luxury Ride" className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-black/40 to-transparent dark:from-[#050505]/90 dark:via-[#050505]/40 light:from-white/90"></div>
+          
+          <div className="relative z-10 text-center w-full pb-10">
+             <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-widest w-full drop-shadow-lg">
+               {t('auth.joinPremium')} <br/><span className="text-primary">{t('auth.premiumFleet')}</span>
+             </h2>
+             <p className="text-[10px] text-gray-300 font-bold tracking-widest uppercase mt-6 leading-relaxed drop-shadow-md">
+               {t('auth.signupDesc')}
+             </p>
+          </div>
         </div>
 
-        <h2 className="text-3xl font-extrabold text-white mb-3 relative z-10 leading-tight">
-          Hello,<br />Friend!
-        </h2>
-        <p className="text-blue-200/80 text-sm mb-8 leading-relaxed relative z-10">
-          Already have an account?<br />Sign in and continue your journey.
-        </p>
-        <Link
-          to="/login"
-          className="relative z-10 border-2 border-blue-400/60 text-blue-100 font-semibold py-2.5 px-9 rounded-full text-xs uppercase tracking-widest hover:bg-blue-600 hover:border-blue-600 hover:text-white active:scale-95 transition-all duration-200"
-        >
-          Sign In
-        </Link>
+        {/* ── RIGHT: Form panel ── */}
+        <div className="flex flex-col justify-center w-full md:w-3/5 px-8 py-16 md:px-16 overflow-y-auto max-h-screen">
+          
+          <Link to="/" className="flex items-center gap-3 mb-10 w-fit hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 border-2 border-primary flex justify-center items-center font-bold text-xl text-primary">Y/B</div>
+            <div className="flex flex-col">
+              <span className="text-xl text-gray-900 dark:text-white font-black tracking-widest leading-none">YASSINE<span className="text-primary">BENHAMZAH</span></span>
+              <span className="text-[10px] text-gray-500 tracking-widest uppercase mt-1">{t('auth.premium')}</span>
+            </div>
+          </Link>
 
-        <span className="absolute bottom-4 text-[10px] text-blue-300/40 tracking-widest uppercase z-10">
-          RentaCar · Premium Fleet
-        </span>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-widest">{t('auth.applyMembership')}</h1>
+          <p className="text-primary text-xs font-bold mb-10 tracking-[0.2em] uppercase">{t('auth.setupProfile')}</p>
+
+          {errors && (
+            <div className="bg-red-50 dark:bg-red-900/20 border-l-2 border-red-500 text-red-600 dark:text-red-500 text-[10px] tracking-widest uppercase px-4 py-3 mb-6">
+              {typeof errors === "object"
+                ? Object.values(errors).flat().join(" · ")
+                : "Something went wrong."}
+            </div>
+          )}
+
+          <form onSubmit={onSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <input ref={nameRef} type="text" placeholder={t('auth.fullName')} required className={inputCls} />
+              <input ref={emailRef} type="email" placeholder={t('auth.email')} required className={inputCls} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <input ref={passwordRef} type="password" placeholder={t('auth.password')} required className={inputCls} />
+              <input ref={passwordConfirmationRef} type="password" placeholder={t('auth.confirmPassword')} required className={inputCls} />
+            </div>
+
+            <div className="flex items-center gap-4 pt-6 pb-2">
+              <span className="text-[10px] text-primary font-bold uppercase tracking-[0.2em]">{t('auth.reqDocs')}</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <input ref={cinRef} type="text" placeholder={t('auth.cin')} className={inputCls} />
+              <input ref={permisRef} type="text" placeholder={t('auth.license')} className={inputCls} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <input ref={phoneRef} type="tel" placeholder={t('auth.mobile')} className={inputCls} />
+              <input ref={addressRef} type="text" placeholder={t('auth.address')} className={inputCls} />
+            </div>
+
+            <button type="submit" disabled={loading} className="w-full bg-primary text-black hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black font-black py-4 tracking-[0.2em] uppercase text-xs transition-all duration-300 disabled:opacity-50 mt-8 cursor-pointer active:scale-[0.98]">
+              {loading ? t('auth.processing') : t('auth.requestMember')}
+            </button>
+          </form>
+
+          <div className="mt-12 flex flex-col md:flex-row text-center justify-between items-center border-t border-gray-200 dark:border-gray-800 pt-8 gap-4">
+            <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">
+              {t('auth.existingMember')}
+            </span>
+            <Link to="/login" className="text-xs text-gray-900 dark:text-white font-black tracking-widest uppercase hover:text-primary dark:hover:text-primary transition-colors">
+              {t('auth.signInHere')}
+            </Link>
+          </div>
+        </div>
+
       </div>
     </div>
   );

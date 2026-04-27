@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #f5ac23; /* The signature gold/yellow color */
+  --color-primary-hover: #d18d1a;
+  
+  --color-bg-dark: #121212;
+  --color-bg-darker: #0d0d0d;
+  --color-bg-light: #ffffff;
+  --color-bg-lighter: #f9fafb;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
